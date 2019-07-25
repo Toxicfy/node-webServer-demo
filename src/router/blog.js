@@ -9,12 +9,12 @@ const baseUrl = '/api/blog'
 
 const handleBlogRouter = (req, res) => {
   // 获取基本参数
-  const { methods, url } = req
+  const { method, url } = req
   const { id } = req.query
   const path = url.split('?')[0]
 
   // 获取博客详情列表
-  if (methods === 'GET' && path === `${baseUrl}/list`) {
+  if (method === 'GET' && path === `${baseUrl}/list`) {
     const { author, keyword } = req.query
     const listData = getList(author, keyword)
     if (listData.length > 0) {
@@ -22,7 +22,7 @@ const handleBlogRouter = (req, res) => {
     }
   }
   // 博客详情
-  if (methods === 'GET' && path === `${baseUrl}/detail`) {
+  if (method === 'GET' && path === `${baseUrl}/detail`) {
     const detailData = getDetail(id)
     if (detailData) {
       return new SuccessModel(detailData)
@@ -30,14 +30,14 @@ const handleBlogRouter = (req, res) => {
   }
 
   // 删除博客
-  if (methods === 'POST' && path === `${baseUrl}/del`) {
+  if (method === 'POST' && path === `${baseUrl}/del`) {
     return {
       msg: 'this is blog del api'
     }
   }
 
   // 新增博客
-  if (methods === 'POST' && path === `${baseUrl}/new`) {
+  if (method === 'POST' && path === `${baseUrl}/new`) {
     // req.body 是进入之前解析客户端的数据获得
     const data = newBlog(req.body)
     if (data) {
@@ -46,7 +46,7 @@ const handleBlogRouter = (req, res) => {
   }
 
   // 更新博客
-  if (methods === 'POST' && path === `${baseUrl}/update`) {
+  if (method === 'POST' && path === `${baseUrl}/update`) {
     const data = updateBlog(id, req.body) //此处返回Boolean
     if (data) {
       return SuccessModel()
