@@ -39,9 +39,16 @@ const updateBlog = (id, blogData = {}) => {
   return true
 }
 
+const delBlog = id => {
+  console.log(id)
+  // 数据删除成功
+  return true
+}
+
 module.exports = {
   getList,
   getDetail,
   newBlog,
-  updateBlog
+  updateBlog,
+  delBlog
 }
