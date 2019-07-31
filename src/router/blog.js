@@ -17,17 +17,19 @@ const handleBlogRouter = (req, res) => {
   // 获取博客详情列表
   if (method === 'GET' && path === `${baseUrl}/list`) {
     const { author, keyword } = req.query
-    const listData = getList(author, keyword)
-    if (listData.length > 0) {
-      return new SuccessModel(listData)
-    }
+    return getList(author, keyword).then(listData => {
+      if (listData.length > 0) {
+        return new SuccessModel(listData)
+      }
+    })
   }
   // 博客详情
   if (method === 'GET' && path === `${baseUrl}/detail`) {
-    const detailData = getDetail(id)
-    if (detailData) {
-      return new SuccessModel(detailData)
-    }
+    getDetail(id).then(detailData => {
+      if (detailData) {
+        return new SuccessModel(detailData)
+      }
+    })
   }
 
   // 删除博客

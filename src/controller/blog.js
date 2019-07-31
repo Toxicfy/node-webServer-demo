@@ -1,30 +1,24 @@
+const { exec } = require('../db/mysql')
+
+// 获取博客列表
 const getList = (author, keyword) => {
-  return [
-    {
-      id: 1,
-      author: 'tom',
-      title: '文章1',
-      content: '内容1',
-      createTime: ''
-    },
-    {
-      id: 2,
-      author: 'tom',
-      title: '文章2',
-      content: '内容2',
-      createTime: ''
-    }
-  ]
+  let sql = `SELECT * FROM blogs WHERE 1=1 `
+  if (author) {
+    sql += `AND author='${author}' `
+  }
+  if (keyword) {
+    sql += `AND title LIKE %'${keyword}'% `
+  }
+  sql += `ORDER BY createTime desc;`
+  return exec(sql)
 }
 
+// 获取博客详细内容
 const getDetail = id => {
-  return {
-    id: 1,
-    author: 'tom',
-    title: '文章1',
-    content: '内容1',
-    createTime: ''
-  }
+  let sql = `SELECT * FROM blogs WHERE id='${id}'`
+  return exec(sql).then(rows => {
+    return rows[0]
+  })
 }
 
 const newBlog = (blogData = {}) => {

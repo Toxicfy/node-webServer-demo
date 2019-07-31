@@ -38,12 +38,12 @@ const server = http.createServer((req, res) => {
   getPostData(req).then(postData => {
     // 获取到对应的post data数据并赋值给req.body
     req.body = postData
-
+    
     // 经过处理的返回数据
-    const blogData = handleBlogRouter(req, res)
-    if (blogData) {
+    handleBlogRouter(req, res).then(blogData => {
       res.end(JSON.stringify(blogData))
-    }
+    })
+
     const userData = handleUserRouter(req, res)
     if (userData) {
       res.end(JSON.stringify(userData))
@@ -51,6 +51,6 @@ const server = http.createServer((req, res) => {
   })
 })
 
-server.listen(8000, () => {
-  console.log('server is running at http://localhost:8000')
+server.listen(3000, () => {
+  console.log('server is running at http://localhost:3000')
 })
