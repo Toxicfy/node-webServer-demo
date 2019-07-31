@@ -35,12 +35,13 @@ const server = http.createServer((req, res) => {
   res.setHeader('content-type', 'application/json')
   req.query = querystring.parse(req.url.split('?')[1]) // 解析url参数
 
-  getPostData(req).then(postData => {
+  getPostData(req).then(postData => { 
     // 获取到对应的post data数据并赋值给req.body
     req.body = postData
-    
+
     // 经过处理的返回数据
-    handleBlogRouter(req, res).then(blogData => {
+    let handleBlogData = handleBlogRouter(req, res)
+    handleBlogData.then(blogData => {
       res.end(JSON.stringify(blogData))
     })
 

@@ -22,10 +22,16 @@ const getDetail = id => {
 }
 
 const newBlog = (blogData = {}) => {
-  // blogData 是客户端传入的数据(通过我们处理过的post data)
-  return {
-    id: Math.random() * 10
-  }
+  // blogData 是客户端传入的数据(通过我们处理过的post data), 包含author，content，title
+  const { author, content, title } = blogData
+  const createTime = Date.now()
+
+  const sql = `INSERT INTO blogs (author,content,title,createTime) VALUES ('${author}','${content}','${title}',${createTime});`
+  return exec(sql).then(insertData => {
+    return {
+      id: insertData.insertId
+    }
+  })
 }
 
 const updateBlog = (id, blogData = {}) => {

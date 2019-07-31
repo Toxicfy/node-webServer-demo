@@ -25,7 +25,7 @@ const handleBlogRouter = (req, res) => {
   }
   // 博客详情
   if (method === 'GET' && path === `${baseUrl}/detail`) {
-    getDetail(id).then(detailData => {
+    return getDetail(id).then(detailData => {
       if (detailData) {
         return new SuccessModel(detailData)
       }
@@ -43,10 +43,13 @@ const handleBlogRouter = (req, res) => {
   // 新增博客
   if (method === 'POST' && path === `${baseUrl}/new`) {
     // req.body 是进入之前解析客户端的数据获得
-    const data = newBlog(req.body)
-    if (data) {
-      return new SuccessModel(data)
-    }
+    const newBlogData = newBlog(req.body)
+    return newBlogData.then(res => {
+      if (res) {
+        console.log(res)
+        return new SuccessModel(res)
+      }
+    })
   }
 
   // 更新博客
