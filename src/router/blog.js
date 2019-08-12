@@ -34,10 +34,14 @@ const handleBlogRouter = (req, res) => {
 
   // 删除博客
   if (method === 'POST' && path === `${baseUrl}/del`) {
-    const data = delBlog(req.body.id)
-    if (data) {
-      return new SuccessModel(data)
-    }
+    const data = delBlog(id)
+    return data.then(res => {
+      if (res) {
+        return new SuccessModel()
+      } else {
+        return new ErrorModel('删除失败')
+      }
+    })
   }
 
   // 新增博客
@@ -46,7 +50,6 @@ const handleBlogRouter = (req, res) => {
     const newBlogData = newBlog(req.body)
     return newBlogData.then(res => {
       if (res) {
-        console.log(res)
         return new SuccessModel(res)
       }
     })
@@ -55,11 +58,13 @@ const handleBlogRouter = (req, res) => {
   // 更新博客
   if (method === 'POST' && path === `${baseUrl}/update`) {
     const data = updateBlog(id, req.body) //此处返回Boolean
-    if (data) {
-      return SuccessModel()
-    } else {
-      return ErrorModel('更新失败')
-    }
+    return data.then(res => {
+      if (res) {
+        return new SuccessModel()
+      } else {
+        return new ErrorModel('更新失败')
+      }
+    })
   }
 }
 

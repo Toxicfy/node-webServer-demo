@@ -21,6 +21,9 @@ const getDetail = id => {
   })
 }
 
+/**
+ * 创建新博客
+ */
 const newBlog = (blogData = {}) => {
   // blogData 是客户端传入的数据(通过我们处理过的post data), 包含author，content，title
   const { author, content, title } = blogData
@@ -35,14 +38,30 @@ const newBlog = (blogData = {}) => {
 }
 
 const updateBlog = (id, blogData = {}) => {
+  const title = blogData.title
+  const content = blogData.content
+
+  const sql = `UPDATE blogs SET title='${title}', content='${content}' WHERE id='${id}'`
+
+  return exec(sql).then(updateData => {
+    if (updateData.affectedRows > 0) {
+      return true
+    }
+    return false
+  })
+
   // 表示更新成功
   return true
 }
 
 const delBlog = id => {
-  console.log(id)
-  // 数据删除成功
-  return true
+  const sql = `DELETE FROM blogs WHERE id='${id}'; `
+  return exec(sql).then(delData => {
+    if (delData.affectedRows > 0) {
+      return true
+    }
+    return false
+  })
 }
 
 module.exports = {
