@@ -35,6 +35,18 @@ const server = http.createServer((req, res) => {
   res.setHeader('content-type', 'application/json')
   req.query = querystring.parse(req.url.split('?')[1]) // 解析url参数
 
+  // 解析 cookie 并赋值给 req
+  req.cookie = {}
+  const cookieStr = req.headers.cookie || ''
+  cookieStr.split(';').forEach(item => {
+    if (!item) return
+    const itemArr = item.split('=')
+    const key = itemArr[0].trim()
+    const value = itemArr[1].trim()
+
+    req.cookie[key] = value
+  })
+
   getPostData(req).then(postData => {
     // 获取到对应的post data数据并赋值给req.body
     req.body = postData
@@ -45,6 +57,7 @@ const server = http.createServer((req, res) => {
       handleBlogData.then(blogData => {
         res.end(JSON.stringify(blogData))
       })
+      return
     }
 
     const userResult = handleUserRouter(req, res)
@@ -52,7 +65,13 @@ const server = http.createServer((req, res) => {
       userResult.then(userData => {
         res.end(JSON.stringify(userData))
       })
+      return
     }
+
+    // 404
+    res.writeHead(404, { 'Content-type': 'text/plain' })
+    res.write('404 not found')
+    res.end()
   })
 })
 
