@@ -3,6 +3,8 @@ const querystring = require('querystring')
 // 路由控制
 const handleBlogRouter = require('./src/router/blog')
 const handleUserRouter = require('./src/router/user')
+// redis
+const { get, set } = require('./src/db/redis')
 
 // 处理post data
 const getPostData = req => {
@@ -31,6 +33,14 @@ const getPostData = req => {
   })
 }
 
+// 获取 cookie 的过期时间
+const getCookieExpires = () => {
+  const d = new Date()
+  d.setTime(d.getTime() + 24 * 60 * 60)
+  console.log('d.toGMTString() is ', d.toGMTString())
+  return d.toGMTString()
+}
+
 const server = http.createServer((req, res) => {
   res.setHeader('content-type', 'application/json')
   req.query = querystring.parse(req.url.split('?')[1]) // 解析url参数
@@ -47,28 +57,62 @@ const server = http.createServer((req, res) => {
     req.cookie[key] = value
   })
 
+  // 解析session并存到redis
+  let needSetCookie = false
+  let userId = req.cookie.userid // 客户端cookie存储的标识
+  if (!userId) {
+    needSetCookie = true
+    userId = `${Date.now()}_${Math.random()}`
+    // 初始化session，存入redis
+    set(userId, {})
+  } else {
+    // 通过userId去redis数据库查询对于的value
+    req.sessionId = userId
+    get(req.sessionId).then(sessionData => {
+      if (sessionData == null) {
+        set(req.sessionId, {})
+        req.session = {}
+      } else {
+        req.session = sessionData
+      }
+    })
+  }
+
   getPostData(req).then(postData => {
     // 获取到对应的post data数据并赋值给req.body
     req.body = postData
 
-    // 经过处理的返回数据
-    let handleBlogData = handleBlogRouter(req, res)
+    // 经过处理的返回博客数据
+    const handleBlogData = handleBlogRouter(req, res)
     if (req.url.includes('/api/blog')) {
       handleBlogData.then(blogData => {
+        if (needSetCookie) {
+          res.setHeader(
+            'Set-Cookie',
+            `userid=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`
+          )
+        }
         res.end(JSON.stringify(blogData))
       })
       return
     }
 
+    // 经过处理的返回用户数据
     const userResult = handleUserRouter(req, res)
     if (req.url.includes('/api/user')) {
       userResult.then(userData => {
+        if (needSetCookie) {
+          res.setHeader(
+            'Set-Cookie',
+            `userid=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`
+          )
+        }
         res.end(JSON.stringify(userData))
       })
       return
     }
 
-    // 404
+    // 处理404
     res.writeHead(404, { 'Content-type': 'text/plain' })
     res.write('404 not found')
     res.end()
