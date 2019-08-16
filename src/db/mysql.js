@@ -5,7 +5,7 @@ const con = mysql.createConnection(MYSQL_CONF)
 con.connect()
 
 // 统一处理 sql
-function exec (sql) {
+function exec(sql) {
   const promise = new Promise((resolve, reject) => {
     con.query(sql, (err, res) => {
       if (err) {
@@ -19,5 +19,6 @@ function exec (sql) {
 }
 
 module.exports = {
-  exec
+  exec,
+  escape: mysql.escape
 }

@@ -1,4 +1,5 @@
-const { exec } = require('../db/mysql')
+const { exec, escape } = require('../db/mysql')
+const xss = require('xss')
 
 // 获取博客列表
 const getList = (author, keyword) => {
@@ -26,7 +27,9 @@ const getDetail = id => {
  */
 const newBlog = (blogData = {}) => {
   // blogData 是客户端传入的数据(通过我们处理过的post data), 包含author，content，title
-  const { author, content, title } = blogData
+  const { author } = blogData
+  const title = xss(blogData.title)
+  const content = xss(blogData.content)
   const createTime = Date.now()
 
   const sql = `INSERT INTO blogs (author,content,title,createTime) VALUES ('${author}','${content}','${title}',${createTime});`
