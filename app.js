@@ -42,6 +42,13 @@ const getCookieExpires = () => {
 }
 
 const server = http.createServer((req, res) => {
+  // 记录 access log
+  access(
+    `${req.method} -- ${req.url} -- ${
+      req.headers['user-agent']
+    } -- ${Date.now()}`
+  )
+  
   res.setHeader('content-type', 'application/json')
   req.query = querystring.parse(req.url.split('?')[1]) // 解析url参数
 

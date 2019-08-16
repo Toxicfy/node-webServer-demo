@@ -4,7 +4,7 @@ const { REDIS_CONF } = require('../conf/db')
 // 创建redis客户端
 const redisClient = redis.createClient(REDIS_CONF.port, REDIS_CONF.host)
 
-// 设置redis
+// 设置 redis
 function set(key, val) {
   if (typeof value === Object) {
     val = JSON.stringify(val)

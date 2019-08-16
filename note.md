@@ -33,3 +33,7 @@ document.cookie 可以查看
 
 为什么需要 redis?
 session 是放置在 node 进程中，占用进程可能过大
+
+<!-- stream -->
+
+可以节省资源，通过不断的发送接收从而完成资源的 IO
